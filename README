@@ -1,0 +1,13 @@
+sudo apt update
+sudo apt-get install build-essential m4 automake libtool texinfo
+
+git clone https://github.com/wbhart/mpir.git && cd mpir
+./autogen.sh
+export BUILD_TRIPLET=$(./config.guess)
+./configure --enable-fat --enable-gmpcompat --build=$BUILD_TRIPLET --host=$BUILD_TRIPLET CFLAGS="-O3 -march=native" CXXFLAGS="-O3 -march=native"
+make -j$(nproc + 1)
+sudo make install
+sudo ldconfig
+ls /usr/local/lib | grep mpir # check if mpir is installed
+
+g++ -stc=c++11 -O3 -march=native -o prime_checker_mpir prime_checker_mpir.cpp -I/usr/local/include -L/usr/local/lib -lmpir
